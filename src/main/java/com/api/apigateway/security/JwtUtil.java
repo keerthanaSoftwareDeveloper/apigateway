@@ -2,36 +2,44 @@ package com.api.apigateway.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 
-import java.security.Key;
-import java.util.Date;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+
 
 public class JwtUtil {
 
-    private static final String SECRET = "mysecretkeymysecretkeymysecretkey123";
 
-    private static Key getKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes());
-    }
+        private static final String SECRET = "mysecretkeymysecretkeymysecretkey123";
 
-    public static String generateToken(String username) {
+        private final SecretKey key =
+                Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 
-        return Jwts.builder()
-                .setSubject(username)
-                .claim("role", "USER")
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour
-                .signWith(getKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
+        public Claims validateToken(final String token) {
+            try {
+                return Jwts.parserBuilder()
+                        .setSigningKey(key)
+                        .build()
+                        .parseClaimsJws(token)
+                        .getBody();
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid JWT Token", e);
+            }
+        }
+        public boolean isRequestAuthorized(String path, Claims claims) {
+//        String role = claims.get("role", String.class);
+//
+//        if (path.startsWith("/student/**") && !role.equals("ADMIN")) {
+//            return false;
+//        }
 
-    public static Claims validateToken(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
+            return true;
+        }
+
+
+
+
+
+
 }
