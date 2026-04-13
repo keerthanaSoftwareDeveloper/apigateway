@@ -26,14 +26,16 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
     }
 
     private static final List<String> OPEN_API_ENDPOINTS = List.of(
-            "/student/auth/**",
-            "/student/createNewUser"
+            "/student/auth/**", "/student/createNewUser", "/staff/admin/login", "/staff/admin/register", "/staff/admin/forget-password"
             // You can also use patterns like "/student/auth/**"
     );
 
     private boolean isOpenEndpoint(String path) {
-        return path.startsWith("/student/auth/login") ||
-                path.startsWith("/student/createNewUser");
+        return  path.startsWith("/student/auth/login") ||
+                path.startsWith("/student/createNewUser") ||
+                path.startsWith("/staff/admin/login") ||
+                path.startsWith("/staff/admin/register") ||
+                path.startsWith("/staff/admin/forget-password");
     }
 
 
